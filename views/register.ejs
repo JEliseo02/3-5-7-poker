@@ -1,10 +1,28 @@
-<%- include('partials/header') %>
+<body>
+    <%- include('partials/header') %>
 
+   
 
-<form action="/register" method="POST">
-    <input type="text" name="username" placeholder="Username" required>
-    <input type="password" name="password" placeholder="Password" required>
-    <button type="submit">Register</button>
-</form>
+    <main class="register-container">
+        <h2 class="register-title">Register</h2>
+         <!-- Flash Messages -->
+        <% if (messages.error) { %>
+            <div class="flash-message error-flash">
+                <%= messages.error %>
+            </div>
+        <% } %>
+        <% if (messages.success) { %>
+            <div class="flash-message correct-flash">
+                <%= messages.success %>
+            </div>
+        <% } %>
 
-<%- include('partials/footer') %>
+        <form action="/register" method="POST" class="register-form">
+            <input type="text" name="username" placeholder="Username" class="register-input" required>
+            <input type="password" name="password" placeholder="Password" class="register-input" required>
+            <button type="submit" class="register-button">Register</button>
+        </form>
+    </main>
+
+    <%- include('partials/footer') %>
+</body>

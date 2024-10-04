@@ -1,13 +1,49 @@
-
-
 <body>
     <%- include('partials/header') %>
 
     <main>
-        <h2>Create Session</h2>
+        <h2>Welcome to the Lobby</h2>
         <p>Your session code is: <strong><%= sessionCode %></strong></p>
+        <p>Host: <strong><%= host %></strong></p>
+        
+        <h3>Players in Lobby:</h3>
+        <ul id="playerList"> <!-- Added id for updating the player list -->
+            <% if (players.length > 0) { %>
+                <% players.forEach(player => { %>
+                    <li><%= player %></li>
+                <% }); %>
+            <% } else { %>
+                <li>No players have joined yet.</li>
+            <% } %>
+        </ul>
+
         <button onclick="window.location.href='/play'">Back to Play</button>
     </main>
 
     <%- include('partials/footer') %>
+
+    <!-- Include Socket.IO client script -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io(); // Initialize Socket.IO client
+
+        // Listen for the 'playerJoined' event
+        socket.on('playerJoined', function(data) {
+            // Update the player list in the lobby
+            const playerList = document.getElementById('playerList'); // Select the player list
+            playerList.innerHTML = ''; // Clear current list
+            data.players.forEach(player => {
+                const listItem = document.createElement('li'); // Create new list item
+                listItem.textContent = player; // Set player name
+                playerList.appendChild(listItem); // Append to the player list
+            });
+
+            // If no players are present, remove the "No players have joined yet." message
+            if (data.players.length === 0) {
+                const noPlayersMessage = document.createElement('li');
+                noPlayersMessage.textContent = "No players have joined yet.";
+                playerList.appendChild(noPlayersMessage);
+            }
+        });
+    </script>
 </body>
