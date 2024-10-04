@@ -1,0 +1,42 @@
+<!-- Include the header partial -->
+<%- include('partials/header') %>
+
+<main class="rules-container">
+    <h2>3-5-7 Poker Game Rules</h2>
+    <ol>
+        <li><strong>Wild Cards:</strong>
+            <ul>
+                <li>Round 1: 3s are wild.</li>
+                <li>Round 2: 5s are wild.</li>
+                <li>Round 3: 7s are wild.</li>
+            </ul>
+        </li>
+        <li><strong>Starting the Game:</strong>
+            <p>Each player puts in pre-set ante to start the game.</p>
+        </li>
+        <li><strong>Playing vs Player:</strong>
+            <p>The first player will choose whether to play their hand, if they decide not to play their hand the next person on the table can chose to play. If playing against another player, they will swap hands and determine who has the better hand. The winner takes the pot, and the loser must match the amount in the pot.</p>
+        </li>
+        <li><strong>Playing Against the Dealer:</strong>
+            <p>If only one person choses to play their hand and no other players play, they will play against the dealer. The player reveals their hand. The dealer will draw a certain number of cards from the deck to try to beat the player’s hand. If the player wins, they take the entire pot, and the entire game resets. If the dealer wins, the player must match the pot.</p>
+        </li>
+        <li><strong>Pot Handling:</strong>
+            <p>If the pot contains $3 and a player wins, they take the $3 for themselves, and the loser must put in another $3 to match the pot. If there is a tie, the pot will be split among the players, $1.50 each. If the dealer wins then the player must match the current amount in the pot, the pot would now be $6 in this instance.</p>
+        </li>
+        <li><strong>Folding:</strong>
+            <p>Players who choose to fold must wait until the next 3-card round to buy back in. They cannot re-enter with a different number of cards.</p>
+        </li>
+        <li><strong>Non-Playing Participants:</strong>
+            <p>Any players who do not participate in the current round must put in another $0.25 to play in the next round.</p>
+        </li>
+        <li><strong>Game Continuation:</strong>
+            <p>The game continues until the players decide to stop or one player wins all the chips.</p>
+        </li>
+        <li><strong>Player Amount:</strong>
+            <p>Due to the amount of cards in a deck a standard 3-5-7 game can only have seven players. If there is an instance where 8 or more players play than an extra deck will be added in order to ensure fairness and that each player can obtain the max amount of seven cards.</p>
+        </li>
+    </ol>
+</main>
+
+<!-- Include the footer partial -->
+<%- include('partials/footer') %>

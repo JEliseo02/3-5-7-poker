@@ -1,0 +1,15 @@
+<body>
+    <%- include('partials/header') %>
+
+    <main>
+        <h2>Join Session</h2>
+        <form action="/join-session" method="POST">
+            <label for="sessionCode">Enter Session Code:</label>
+            <input type="text" id="sessionCode" name="sessionCode" required maxlength="4">
+            <button type="submit">Join</button>
+        </form>
+        <button onclick="window.location.href='/play'">Back to Play</button>
+    </main>
+
+    <%- include('partials/footer') %>
+</body>

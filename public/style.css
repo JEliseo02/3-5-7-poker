@@ -1,0 +1,179 @@
+body {
+    font-family: Arial, sans-serif;
+    
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #f4f4f4;
+}
+
+h1 {
+    color: #333;
+}
+
+#game {
+    border: 2px solid #000;
+    width: 600px;
+    height: 400px;
+    background-color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Header Formatting */
+
+.header {
+    text-align: center; /* Center all content in the header */
+    padding: 20px; /* Add some padding */
+    background-color: #f8f9fa; /* Optional: light background color */
+    border-bottom: 1px solid #ccc; /* Optional: border for separation */
+}
+
+/* New style for header-content */
+.header-content {
+    display: flex; /* Use flexbox for header content */
+    justify-content: space-between; /* Space between title and nav */
+    align-items: center; /* Align items vertically centered */
+}
+
+.title {
+    margin: 0; /* Remove default margin */
+}
+
+.nav {
+    display: flex; /* Use flexbox for navigation layout */
+    align-items: center; /* Center items vertically */
+    margin-top: 0; /* Remove margin at the top */
+}
+
+.greeting {
+    margin-right: 15px; /* Add some space after greeting */
+    font-size: 16px; /* Optional: adjust font size for visibility */
+}
+
+.nav-links {
+    display: flex; /* Use flexbox for nav links */
+    align-items: center; /* Center nav items vertically */
+}
+
+.nav-item {
+    text-decoration: none; /* Remove underline from links */
+    color: #007bff; /* Link color */
+    margin: 0 10px; /* Margin around each nav item */
+}
+
+.nav-item:hover {
+    text-decoration: underline; /* Underline on hover for better UX */
+}
+
+
+
+/* Home Styling */
+
+/* Home page specific styles */
+.home-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: calc(100vh - 200px); /* Adjust height based on header/footer */
+    text-align: center;
+    padding: 20px;
+}
+
+.home-title {
+    font-size: 2em;
+    margin-bottom: 10px;
+}
+
+.home-greeting {
+    font-size: 1.2em;
+    margin-bottom: 20px;
+}
+
+.home-nav {
+    display: flex;
+    flex-direction: column; /* Stack buttons vertically */
+}
+
+.home-btn {
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    padding: 10px 20px;
+    margin-bottom: 10px; /* Add gap between Play and Rules buttons */
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.home-btn:hover {
+    background-color: #0056b3; /* Darken on hover */
+}
+
+
+
+
+/* Main container for the rule page */
+.rules-container {
+    max-width: 800px; /* Limit the width of the content */
+    margin: 0 auto;   /* Center the content horizontally */
+    padding: 20px;    /* Add padding around the content */
+    background-color: #ffffff; /* White background for a clean look */
+    border-radius: 8px; /* Optional: Add rounded corners */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional: Add a subtle shadow */
+}
+
+/* Typography for headings */
+.rules-container h2 {
+    text-align: center; /* Center the heading */
+    font-size: 2em;     /* Make it stand out */
+    margin-bottom: 20px; /* Add space below the heading */
+}
+
+/* Styling for the ordered list */
+.rules-container ol {
+    padding-left: 20px; /* Add some space for list indentation */
+    line-height: 1.6;   /* Increase line height for readability */
+}
+
+/* Style list items */
+.rules-container li {
+    margin-bottom: 15px; /* Add space between each rule */
+}
+
+/* Unordered list inside an ordered list */
+.rules-container ul {
+    padding-left: 20px; /* Ensure inner lists are indented */
+    margin-top: 10px;   /* Add space above sublist */
+}
+
+/* Paragraph styling for the rule text */
+.rules-container p {
+    margin-bottom: 10px; /* Add space between paragraphs */
+}
+
+/* Optional: Add emphasis to important sections */
+.rules-container strong {
+    font-weight: bold;
+    color: #333; /* Darker text for emphasis */
+}
+
+
+
+
+
+
+
+
+
+/* Footer Styling */
+
+footer {
+    margin-top: auto; /* Push footer to the bottom */
+    text-align: center; /* Center text in footer */
+    padding: 10px; /* Add some padding */
+    background-color: #f8f9fa; /* Match header background */
+    border-top: 1px solid #ccc; /* Optional: border for separation */
+}

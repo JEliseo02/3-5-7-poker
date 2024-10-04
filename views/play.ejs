@@ -1,0 +1,45 @@
+
+<%- include('partials/header') %>
+<body>
+    
+
+    <h2>Play</h2>
+<button id="create-session">Create Session</button>
+<button id="join-session">Join Session</button>
+<button id="view-rules">View Rules</button>
+
+<div id="session-forms" style="display: none;">
+    <h3>Create Session</h3>
+    <button onclick="createSession()">Create</button>
+
+    <h3>Join Session</h3>
+    <input type="text" id="session-password" placeholder="Enter Session Password">
+    <button onclick="joinSession()">Join</button>
+</div>
+
+<script>
+    document.getElementById('create-session').onclick = function() {
+        createSession();
+    };
+
+    function createSession() {
+        fetch('/create-session', { method: 'POST' })
+            .then(response => response.json())
+            .then(data => {
+                alert('Session created! Password: ' + data.password);
+            });
+    }
+
+    document.getElementById('join-session').onclick = function() {
+        document.getElementById('session-forms').style.display = 'block';
+    };
+
+    function joinSession() {
+        const password = document.getElementById('session-password').value;
+        // Handle joining session logic here
+        alert('Joining session with password: ' + password);
+    }
+</script>
+
+</body>
+<%- include('partials/footer') %>
