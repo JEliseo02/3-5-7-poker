@@ -103,7 +103,8 @@ h1 {
     flex-direction: column; /* Stack buttons vertically */
 }
 
-.home-btn {
+.home-btn,
+.join-btn {
     background-color: #007bff;
     color: white;
     text-decoration: none;
@@ -124,7 +125,8 @@ h1 {
 /* Container for the entire login section */
 .login-container, 
 .register-container,
-.play-container {
+.play-container,
+.join-container {
     max-width: 400px; /* Set a smaller width for a sleek design */
     margin: 50px auto; /* Center horizontally and add space at the top */
     padding: 20px; /* Padding around the content */
@@ -137,7 +139,8 @@ h1 {
 /* Centered title */
 .login-title, 
 .register-title,
-.play-title {
+.play-title,
+.join-title {
     margin-bottom: 20px; /* Space between the title and the form */
     font-size: 24px; /* Slightly larger font for prominence */
 }
@@ -145,7 +148,8 @@ h1 {
 /* Form styling */
 .login-form, 
 .register-form,
-.play-form {
+.play-form,
+.join-form {
     display: flex;
     flex-direction: column; /* Stack inputs and button vertically */
     align-items: center; /* Center inputs within the form */
@@ -192,12 +196,28 @@ h1 {
 
 .login-button:hover, 
 .register-button:hover,
-.play-button:hover {
+.play-button:hover,
+.join-btn:hover {
     background-color: #0056b3; /* Darker blue on hover */
 }
 
 
 
+.join-label {
+    margin-bottom: 15px; /* Adjust the value to get the desired spacing */
+    display: block; /* Ensures it behaves as a block element and allows margin */
+}
+
+.join-input {
+    width: 100%; /* Full width within the container */
+    padding: 10px; /* Padding inside the input */
+    margin-bottom: 15px; /* Space between input fields */
+    border: 1px solid #ccc; /* Light border around inputs */
+    border-radius: 4px; /* Rounded corners */
+    font-size: 16px; /* Comfortable font size */
+    box-sizing: border-box; /* Ensure padding doesn't affect width */
+    text-align: center;
+}
 
 
 
@@ -248,6 +268,91 @@ h1 {
 }
 
 
+/* Create-Session (Lobby) Styling */
+
+/* Lobby Container */
+.lobby-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    text-align: left; /* Align content to the left */
+}
+
+/* Center the Welcome Title */
+.welcome-title {
+    text-align: center;
+    font-size: 2em;
+    margin-bottom: 20px;
+}
+
+/* Session Details Styling */
+.session-details {
+    margin-left: 20px; /* Move session details slightly to the right */
+    font-size: 1.2em;
+    margin-bottom: 20px;
+}
+
+/* Player List Container Styling */
+.player-list-container {
+    margin-left: 20px;
+}
+
+/* Player List Box Styling */
+.player-list {
+    background-color: #f7f7f7;
+    border: 1px solid #ddd;
+    padding: 15px;
+    list-style: none;
+    max-width: 300px;
+    margin-left: 20px; /* Space it from the left */
+}
+
+.player-list li {
+    margin: 5px 0;
+    font-size: 1em;
+}
+
+/* Back Button Styling */
+.back-btn {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.back-btn:hover {
+    background-color: #0056b3;
+}
+
+.kick-btn {
+    background-color: red;
+    color: white;
+    border: none;
+    cursor: pointer;
+    padding: 2px 5px;
+    margin-left: 10px;
+    font-size: 14px;
+    font-weight: bold;
+    border-radius: 3px;
+}
+
+.kick-btn:hover {
+    background-color: darkred;
+}
+
+.kick-btn:focus {
+    outline: none;
+}
+
+
+
+
+
+
 
 
 
@@ -264,7 +369,6 @@ footer {
     background-color: #f8f9fa; /* Match header background */
     border-top: 1px solid #ccc; /* Optional: border for separation */
 }
-
 
 
 /* Flash Styling */

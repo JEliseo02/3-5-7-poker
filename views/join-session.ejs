@@ -1,14 +1,14 @@
 <body>
     <%- include('partials/header') %>
 
-    <main>
-        <h2>Join Session</h2>
-        <form action="/join-session" method="POST">
-            <label for="password">Session Code:</label>
-            <input type="text" id="password" name="password" required>
-            <button type="submit">Join Session</button>
+    <main class="join-container">
+        <h2 class="join-title">Join Session</h2>
+        <form action="/join-session" class="join-form" method="POST">
+            <label for="password" class="join-label">Insert Session Code:</label>
+            <input type="text" id="password" name="password" class="join-input" required>
+            <button type="submit" class="join-btn">Join Session</button>
         </form>
-        <button onclick="window.location.href='/play'">Back to Play</button>
+        <button onclick="window.location.href='/play'" class="join-btn">Back to Play</button>
     </main>
 
     <%- include('partials/footer') %>

@@ -1,23 +1,29 @@
 <body>
     <%- include('partials/header') %>
 
-    <main>
-        <h2>Welcome to the Lobby</h2>
-        <p>Your session code is: <strong><%= sessionCode %></strong></p>
-        <p>Host: <strong><%= host %></strong></p>
+    <main class="lobby-container">
+        <h2 class="welcome-title">Welcome to the Lobby</h2>
+        <div class="session-details">
+            <p>Current Host: <strong><%= host %></strong></p>
+            <p>Your session code is: <strong><%= sessionCode %></strong></p>
+        </div>
         
-        <h3>Players in Lobby:</h3>
-        <ul id="playerList"> <!-- Added id for updating the player list -->
-            <% if (players.length > 0) { %>
-                <% players.forEach(player => { %>
-                    <li><%= player %></li>
-                <% }); %>
-            <% } else { %>
-                <li>No players have joined yet.</li>
-            <% } %>
-        </ul>
+        <div class="player-list-container">
+            <h3>Players in Lobby:</h3>
+            <ul id="playerList" class="player-list"> <!-- Added class for player list box -->
+                <% if (players.length > 0) { %>
+                    <% players.forEach((player, index) => { %>
+                        <li class="player-item" id="player-<%= index %>">
+                            <%= player %>
+                        </li>
+                    <% }); %>
+                <% } else { %>
+                    <li>No players have joined yet.</li>
+                <% } %>
+            </ul>
+        </div>
 
-        <button onclick="window.location.href='/play'">Back to Play</button>
+        <button class="back-btn" onclick="window.location.href='/play'">Back to Play</button>
     </main>
 
     <%- include('partials/footer') %>
@@ -27,23 +33,18 @@
     <script>
         const socket = io(); // Initialize Socket.IO client
 
-        // Listen for the 'playerJoined' event
+        // Listen for the 'playerJoined' event to update the player list
         socket.on('playerJoined', function(data) {
-            // Update the player list in the lobby
-            const playerList = document.getElementById('playerList'); // Select the player list
+            const playerList = document.getElementById('playerList');
             playerList.innerHTML = ''; // Clear current list
-            data.players.forEach(player => {
-                const listItem = document.createElement('li'); // Create new list item
-                listItem.textContent = player; // Set player name
-                playerList.appendChild(listItem); // Append to the player list
+            data.players.forEach((player, index) => {
+                const listItem = document.createElement('li');
+                listItem.className = 'player-item';
+                listItem.id = `player-${index}`;
+                listItem.innerHTML = `${player}`; // No kick button included
+                playerList.appendChild(listItem);
             });
-
-            // If no players are present, remove the "No players have joined yet." message
-            if (data.players.length === 0) {
-                const noPlayersMessage = document.createElement('li');
-                noPlayersMessage.textContent = "No players have joined yet.";
-                playerList.appendChild(noPlayersMessage);
-            }
         });
     </script>
+
 </body>
