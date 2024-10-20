@@ -1,0 +1,7 @@
+# .gitignore file, this will ensure that nothing in this file is uploaded to a git repository
+node_modules/
+.env
+.DS_Store.Trash/
+.DS_Store
+node_modules/
+.env
