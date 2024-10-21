@@ -62,15 +62,17 @@ app.use((req, res, next) => {
 
 //Routes to be implemented 
 
-
 // - - - - - Home Route - - - - - |
 app.get('/', (req,res) => {
     res.render('pages/home', {title: 'Welcome to 3-5-7 Poker'});
 });
-
-
 // - - - - - END OF HOME - - - - - 
 
+
+// - - - - - Rules Route - - - - - |
+app.get('/rules', (req,res) => {
+    res.render('pages/rules', {title: 'Rules'});
+})
 
 
 // | - - - - - Login Route - - - - - |

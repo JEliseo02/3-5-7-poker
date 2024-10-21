@@ -1,5 +1,17 @@
+/* - - - - - Animation Styles - - - - - */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+}
 
-/* | - - - - - Global Styling - - - - - |*/
+
+/* - - - - - END OF ANIMATION - - - - - */
+
+
+
+
+/*  - - - - - Global Styling - - - - - */
 * {
     margin: 0;
     padding: 0;
@@ -14,10 +26,10 @@ body{
 }
 
 
-/*| - - - - - END OF GLOBAL - - - - - |*/
+/* - - - - - END OF GLOBAL - - - - - */
 
 
-/* - - - - - Header Styling - - - - - |*/
+/* - - - - - Header Styling - - - - - */
 .main-header{
     background-color: #2c3e50;
     padding: 1rem 0;
@@ -25,17 +37,20 @@ body{
 }
 
 .nav-container{
-    max-width: 120px;
+    max-width: 1200px;
     margin: 0 auto;
+    padding: 0 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    height: 5px;
 }
 
 .nav-links{
     list-style: none;
     display: flex;
     gap: 2rem;
+    align-items: center;
 }
 
 .nav-links a {
@@ -43,16 +58,45 @@ body{
     text-decoration: none;
     padding: 0.5rem 1rem;
     border-radius: 4px;
-    transition: background-color 0.3s;
+    transition: all 0.3s ease;
     cursor: pointer;
+
 }
 
 .nav-links a:hover{
     background-color: #34495e;
 }
-/* | - - - - - END OF HEADER - - - - - | */
 
-/* | - - - - - Start of Login and Resgister Styling - - - - - | */
+.site-title{
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #fff;
+}
+
+.site-title a{
+    color: #fff;
+    text-decoration: none;
+    font-size: 1.5rem;
+    font-weight: bold;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+
+}
+
+.user-greeting{
+    color: #fff;
+    margin-left: auto;
+    padding: 0.5rem 1rem; /* Pushes the greeting to the right */
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+
+
+/*  - - - - - END OF HEADER - - - - -  */
+
+/*  - - - - - Start of Login and Resgister Styling - - - - -  */
 .auth-container{
     max-width: 400px;
     margin: 2rem auto;
@@ -81,16 +125,137 @@ body{
     transition: background-color 0.3s;
 }
 
-/* - - - - - END OF REGISTER & LOGIN - - - - - |
+/* - - - - - END OF REGISTER & LOGIN - - - - - */
+
+/* - - - - - Start of Home Design - - - - - */
+
+.home-container{
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    text-align: center;
+    padding-bottom: 7rem;
+}
+
+.welcome-section{
+    margin-bottom: 3rem;
+}
+
+.welcome-section h1{
+    font-size: 2.5rem;
+    color: #2c3e50;
+    margin-bottom: 1rem;
+}
+
+.subtitle{
+    font-size: 1.2rem;
+    color: #666;
+    margin-bottom: 2rem;
+}
+
+.button-container{
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.game-button{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    text-decoration: none;
+    min-height: 120px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+
+   
+    background-size: 200% 100%;
+    background-position: right bottom;
+    transition: all .3s ease-out;
+}
+
+.game-button:hover {
+    box-shadow: 0 0 20px rgba(52, 152, 219, 0.4);
+    animation: pulse 1s infinite;
+
+}
+
+.play-btn{
+    background-color: #3498db;
+    color: white;
+}
+
+.join-btn{
+    background-color: #2ecc71;
+    color: white; 
+}
+
+.rules-btn{
+    background-color: #f39c12;
+    color: white;
+}
+
+.play-btn:hover{
+    box-shadow: 0 6px 15px rgba(52, 152, 219, 0.4);
+}
+
+.join-btn:hover{
+    box-shadow: 0 6px 15px rgba(46, 204, 113, 0.4);
+}
+
+.rules-btn:hover{
+    box-shadow: 0 6px 15px rgba(243, 156, 18, 0.4);
+}
+
+.button-text{
+    font-size: 1.5rem;
+    opacity: 0.9;
+    font-weight: bold;
+    
+}
+
+.button-description{
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+.login-prompt{
+    width: 100%;
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-top: 2rem;
+}
+
+.login-prompt a{
+    color: #3498db;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.login-prompt a:hover{
+    text-decoration: underline;
+}
 
 
 
 
+/* - - - - - END OF HOME - - - - - */
 
 
 
 
-/* - - - - - Start of Responsive Design - - - - - | */
+/* - - - - - Start of Responsive Design - - - - -  */
 
 @media (max-width: 768px) {
     .nav-container{
@@ -102,17 +267,43 @@ body{
         flex-direction: column;
         align-items: center;
         gap: 1rem;
+        margin-right: 0;
     }
 
     .auth-container{
         margin: 1rem;
     }
+
+    .user-greeting{
+        margin: 0.5rem 0;
+    }
+
+    .welcome-section h1{
+        font-size: 2rem;
+    }
+
+    .button-container{
+        grid-template-columns: 1fr;
+        padding: 1rem;
+    }
+
+    .game-button{
+        padding: 1.5rem;
+        min-height: 150px;
+    }
+
+    .site-title{
+        position: static;
+        transform: none;
+        order: -1;
+  
+    }
 }
 
-/* - - - - - END OF RESPONSIVE - - - - - | */
+/* - - - - - END OF RESPONSIVE - - - - -  */
 
 
-/* - - - - - Start of Flash styling - - - - - |*/
+/* - - - - - Start of Flash styling - - - - - */
 .alert{
     padding: 1rem;
     margin-bottom: 1rem;
@@ -137,7 +328,7 @@ body{
 
 
 
-/* - - - - - Footing Styling - - - - - | */
+/* - - - - - Footing Styling - - - - -  */
 .main-footer{
     background-color: #2c3e50;
     color: #fff;
@@ -147,4 +338,4 @@ body{
     bottom: 0;
     width: 100%;
 }
-/* - - - - - END OF FOOTER - - - - - | */
+/* - - - - - END OF FOOTER - - - - -   */

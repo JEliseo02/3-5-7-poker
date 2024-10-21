@@ -22,7 +22,18 @@
                 <li><a href="/Logout">Logout</a></li>
             <% } %> 
         
+        <div class="site-title">
+            <a href="/">3-5-7 Poker</a>
+        </div>
+
+
+        <% if (session.userId) { %>
+            <div class="user-greeting">
+                Hi, <%= session.username %>!
+            </div>
+       <% } %>
         </ul>
+
         </nav>
     </header>
 </body>

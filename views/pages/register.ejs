@@ -2,6 +2,23 @@
 
 
 <div class="auth-container">
+
+
+    <!--Flash Messages-->
+    <% if (messages.error) {%>
+        <div class="alert alert-error">
+            <%= messages.error %>
+        </div>
+    <% } %>
+
+    <% if (messages.success) {%>
+        <div class="alert alert-success">
+            <%= messages.success %>
+        </div>
+    <% } %>
+
+
+    
     <h1>Register</h1>
     <form action="/auth/register" method="POST" class="auth-form">
         <div class="form-group">

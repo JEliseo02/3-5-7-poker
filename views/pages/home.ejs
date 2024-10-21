@@ -1,5 +1,35 @@
 <%- include ('../partials/header', {title: 'Welcome to 3-5-7 Poker!'}) %>
 
-<h1><%= title %></h1>
+<div class="home-container">
+    <div class="welcome-secction">
+        <h1><%= title %></h1>
+        <p class="subtitle">Experience the exitement of 3-5-7 Poker online!</p>
+    </div>
+
+    <div class="button-container">
+        <% if (session.userId) { %>
+            <a href="/play" class="game-button play-btn">
+                <span class="button-text">Play</span>
+                <span class="button-description">Create a new game lobby</span>
+            </a>
+
+            <a href="/join" class="game-button join-btn">
+                <span class="button-text">Join</span>
+                <span class="button-description">Join an existing game</span>
+            </a>
+        <% } %>
+
+            <a href="/rules" class="game-button rules-btn">
+                <span class="button-text">Rules</span>
+                <span class="button-description">Learn how to play</span>
+            </a>
+
+        <% if (!session.userId) { %>
+            <div class="login-prompt">
+                <p>Please <a href="/login">login</a> or <a href="/register"> register</a></p>
+            </div>
+        <% } %>
+    </div>
+</div>
 
 <%- include ('../partials/footer') %>
