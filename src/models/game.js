@@ -54,7 +54,7 @@ const gameSchema = new Schema ({
             type: Number,
             default: 0
         },
-        transctions: [{
+        transactions: [{
             playerId: {
                 type: Schema.Types.ObjectId,
                 ref: 'User'
@@ -87,8 +87,83 @@ const gameSchema = new Schema ({
     }
 });
 
-//Method to update player amounts (works with or without banker)
 
+
+// - - - - - 1. Core setup Methods - - - - - 
+
+
+// Add method to validate and update game status
+gameSchema.methods.updateGameStatus = async function(newStatus){
+    const validTransitions = {
+        'waiting': ['in-progress'],
+        'in-progress': ['completed'],
+        'completed': []
+    };
+
+    // Check if transition is valid
+    if (!validTransitions[this.gameStatus].includes(newStatus)) {
+        throw new Error(`Invalid status transition from ${this.gameStatus} to ${newStatus}`);
+    }
+
+    // If completing game, set endedAt
+    if (newStatus === 'completed') {
+        this.endedAt = new Date();
+    }
+
+    this.gameStatus = newStatus;
+    return this.save();
+};
+
+
+
+// Method to assign banker
+gameSchema.methods.assignBanker = async function(bankerId) {
+    const player = this.players.find(p => p.userId.equals(bankerId));
+    if (!player) {
+        throw new Error('Selected banker must be a player in the game');
+    }
+
+    this.hasBanker = true;
+    this.bankerId = bankerId;
+
+    //Initial total pool amount
+    this.bankerTracking.totalPoolAmount = this.players.reduce((sum, player) => 
+        sum + player.currentAmount, 0);
+
+    return this.save();
+};
+
+
+
+// Method to validate banker options
+gameSchema.methods.validateBankerOptions = function(operation) {
+    if (!this.hasBanker) {
+        throw new Error('No banker assigned to this game!');
+    }
+
+    //Check if banker exists and matches
+    const banker = this.players.find( p => p.userId.equals(this.bankerId));
+    if (!banker) {
+        throw new Error('Banker not found in player list');
+    }
+
+    const totalPlayerMoney = this.players.reduce((sum, player) => 
+        sum + player.currentAmount, 0);
+
+    // Validate total money matches pool
+    if (Math.abs(totalPlayerMoney - this.bankerTracking.totalPoolAmount) > 0.01 ) {
+        throw new Error('Pool amount mismatch detected!');
+    }
+
+    return true;
+};
+
+
+
+// - - - - - 2. Player Management Options - - - - - 
+
+
+//Method to update player amounts (works with or without banker)
 gameSchema.methods.updatePlayerAmount = async function(playerId, newAmount) {
     //Find the player in the players array whose userId matches the provided playersId
     //The equals() method is used instead of === becasue userId is an ObjectId
@@ -108,6 +183,62 @@ gameSchema.methods.updatePlayerAmount = async function(playerId, newAmount) {
     }
 };
 
+
+
+// Method to handle additional buy-ins
+gameSchema.methods.addBuyIn = async function(playerId, amount) {
+    if(!Number.isFinite(amount) || amount <= 0) {
+        throw new Error('Invalid buy-in amount!');
+    }
+
+    // Find player
+    const player = this.players.find(p => p.userId.equals(playerId));
+    if(!player) {
+        throw new Error('Player not found in game!');
+    }
+
+    // Add buy-ins to player's record
+    player.additionalBuyIns.push({
+        amount: amount,
+        timestamp: new Date()
+    });
+
+    // Update current amount
+    player.currentAmount += amount;
+
+    // If banker is active update pool amount
+    if (this.hasBanker){
+        this.bankerTracking.totalPoolAmount += amount;
+        this.bankerTracking.transactions.push({
+            playerId: playerId,
+            type: 'additional-buy-in',
+            amount: amount
+        });
+    }
+    return this.save();
+};
+
+
+
+// Helper method to get player balance 
+gameSchema.methods.getPlayerBalance = function(playerId) {
+    const player = this.players.find(p => p.userId.equals(playerId));
+    if (!player) {
+        throw new Error('Player not found');
+    }
+
+    return {
+        currentAmount: player.currentAmount,
+        totalBuyIn: player.initialBuyIn +
+            player.additionalBuyIns.reduce((sum, buyIn) => sum + buyIn.amount, 0),
+        winnings: player.winnings
+    };
+};
+
+
+// - - - - - 3. Summary Methods - - - - - 
+
+
 //Method to get the game summary (works with or without banker)
 gameSchema.methods.getGameSummary = function() {
     //Use map to create a new array containing summary data for each player
@@ -125,6 +256,40 @@ gameSchema.methods.getGameSummary = function() {
         totalBuyIn: player.initialBuyIn + player.additionalBuyIns.reduce((sum, buyIn) => sum + buyIn.amount, 0)
     }));
 }
+
+
+
+// Method to end the game and calculate final settlements
+gameSchema.methods.endGame = async function() {
+    if (this.gameStatus !== 'in-progress'){
+        throw new Error('Cannot end a game currently in progress');
+    }
+
+    // If there is a banker, validate final settlements
+    if(this.hasBanker) {
+        this.validateBankerOptions('end-game');
+    }
+
+    //Calculate results for each player
+    const finalResults = this.players.map(player =>({
+        userId: player.userId,
+        initialBuyIn: player.initialBuyIn,
+        finalAmount: player.currentAmount,
+        totalProfit: player.winnings,
+        additionalBuyIns: player.additionalBuyIns.reduce((sum, buyIn) => 
+            sum + buyIn.amount, 0)
+    }));
+
+    this.gameStatus = 'completed';
+    this.endedAt = new Date();
+
+    await this.save();
+    return finalResults;
+};
+
+
+
+
 
 const Game = mongoose.model('Game', gameSchema);
 module.exports = Game;
