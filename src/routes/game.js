@@ -1,43 +1,33 @@
+// src/routes/game.js
 const express = require('express');
 const router = express.Router();
 const { isAuthenticated } = require('../middleware/auth');
 
-const gameRouter = (app) => {
-    //  - - - - - Lobby Route - - - - - 
-    router.get('/lobby', isAuthenticated, (req,res) => {
-        res.render('pages/lobby', {title: 'Play Game'});
-    });
+// Socket.IO connection handler
+const handleSocketConnection = (io) => {
+    io.on('connection', (socket) => {
+        console.log('New Client Connected!');
 
-    //  - - - - - Join Route - - - - - 
-    router.get('/join', isAuthenticated, (req,res) => {
-        res.render('pages/join', {title: 'Join Game'});
-    });
-
-    // Socket.IO Handlers 
-    const handleSocketConnection = (io) => {
-        // Socket.IO connection handling 
-        io.on('connection', (socket) => {
-            console.log('New Client Connected!');
-
-            // Handles when a player joins
-            socket.on('PlayerJoin', (playerData) => {
-                // TODO: Implement Player Join Logic
-                console.log('Player Joined: ', playerData);
-                // Broadcast to other players or update game state
-            });
-
-            // Handles a disconnect
-            socket.on('disconnect', () => {
-                console.log('Client Disconnected');
-                // TODO: Handle player disconnect logic
-            });
+        socket.on('PlayerJoin', (playerData) => {
+            console.log('Player Joined: ', playerData);
+            // TODO: Implement Player Join Logic
         });
-    };
 
-    return {
-        router,
-        handleSocketConnection
-    };
+        socket.on('disconnect', () => {
+            console.log('Client Disconnected');
+            // TODO: Handle player disconnect logic
+        });
+    });
 };
 
-module.exports = gameRouter;
+//  - - - - - Lobby Route - - - - - 
+router.get('/lobby', isAuthenticated, (req, res) => {
+    res.render('pages/lobby', { title: 'Play Game' });
+});
+
+//  - - - - - Join Route - - - - - 
+router.get('/join', isAuthenticated, (req, res) => {
+    res.render('pages/join', { title: 'Join Game' });
+});
+
+module.exports = { router, handleSocketConnection };

@@ -8,7 +8,7 @@
         <% rules.forEach((rule, index) => { %>
             <div class="rule-section">
                 <button class="rule-toggle" onclick="toggleRule(<%= index %>)">
-                    <span><%= index + 1 %>.) <%= rule.title %></span>
+                    <span>Rule <%= index + 1 %>: <%= rule.title %></span>
                     <span class="toggle-icon">▶</span>
                 </button>
                 <div class="rule-content" id="rule-<%= index %>">
