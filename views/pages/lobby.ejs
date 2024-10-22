@@ -1,4 +1,24 @@
-<%- include ('../partials/header', {title: 'Error Page'}) %>
+<%- include ('../partials/header', {title: 'Create Lobby'}) %>
 
+
+<div class="lobby-container">
+    <h1>Create a new Game Lobby</h1>
+
+    <form action="/game/create-lobby" method="POST" class="lobby-form">
+        <div class="form-group">
+            <label for="lobbyName">Lobby Name: </label>
+            <input 
+            type="text"
+            id="lobbyName"
+            name="lobbyName"
+            required
+            minlength="3"
+            maxlength="20"
+            placeholder="Enter a name for your lobby"
+        >
+        </div>
+        <button type="submit" class="lobby-button">Let's Go!</button>
+    </form>
+</div>
 
 <%- include ('../partials/footer') %>

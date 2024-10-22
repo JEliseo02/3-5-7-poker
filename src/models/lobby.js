@@ -9,6 +9,12 @@ const lobbySchema = new Schema({
         unique: true,
         length: 4
     },
+
+    urlId: {
+        type: String,
+        required: true,
+        unique: true
+    },
     
     expiresAt: {
         type: Date,
@@ -54,7 +60,7 @@ const lobbySchema = new Schema({
     gameSettings: {
         maxPlayers: {
             type: Number,
-            default: 7
+            default: 6
         },
         hasBanker: {
             type: Boolean,
@@ -95,6 +101,21 @@ lobbySchema.statics.generateUniqueCode = async function() {
             expiresAt: { $gt: new Date()}
         });
         if (!exists) return code;
+    }
+};
+
+//Method to generate a URL-safe ID
+lobbySchema.statics.generateUrlId = async function () {
+    while (true) {
+        const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_';
+        let urlId = '';
+        for (let i = 0; i < 16; i ++) {
+            urlId += characters.charAt(Math.floor(Math.random() * characters.length));
+        }
+
+        //check if ID exists
+        const exists = await this.findOne({ urlId });
+        if (!exists) return urlId;
     }
 };
 

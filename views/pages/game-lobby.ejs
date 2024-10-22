@@ -1,0 +1,23 @@
+<%- include ('../partials/header', {title: 'Welcome to 3-5-7 Poker!'}) %>
+
+
+<div class="game-lobby">
+    <h1><%= lobby.name %></h1>
+    <p>Lobby Code: <%= lobby.code %></p>
+    <p>Share URL: /game/lobby/<%= lobby.urlId %></p>
+
+    <div class="player-list">
+        <h2>Players</h2>
+        <ul>
+            <% lobby.players.forEach(player => { %>
+                <li class="player <%= player.userId.equals(lobby.hostId) ? 'host' : '' %>">
+                    <%= player.userId.equals(lobby.hostId) ? '👑' : '' %>
+                    <%= player.userId.username %>
+                </li>
+            <% }) %>
+        </ul>
+    </div>
+</div>
+
+
+<%- include ('../partials/footer') %>

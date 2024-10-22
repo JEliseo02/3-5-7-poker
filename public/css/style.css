@@ -355,6 +355,64 @@ body{
     transform: rotate(180deg);
 }
 
+/* - - - - - END OF RULE - - - - - */
+
+
+/* - - - - - Start of Lobby Design - - - - - */
+.lobby-container{
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.lobby-form{
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.lobby-form .form-group{
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.lobby-form label{
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.lobby-form input{
+    padding: 0.8rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 4px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+.lobby-form input:focus{
+    border-color: #3498db;
+    outline: none;
+}
+
+.lobby-button{
+    background-color: #3498db;
+    color: white;
+    padding: 1rem;
+    border: none;
+    border-radius: 4px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.lobby-button:hover{
+    background-color: #2980b9;
+}
 
 
 
