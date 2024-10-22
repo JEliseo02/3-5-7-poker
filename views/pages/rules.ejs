@@ -1,6 +1,44 @@
-<%- include ('../partials/header', {title: 'Login'}) %>
+<%- include ('../partials/header', {title: 'Game Rules'}) %>
+
+<div class="rules-container">
+    <h1><%= title %></h1>
 
 
+    <div class="rule-list">
+        <% rules.forEach((rule, index) => { %>
+            <div class="rule-section">
+                <button class="rule-toggle" onclick="toggleRule(<%= index %>)">
+                    <span><%= index + 1 %>.) <%= rule.title %></span>
+                    <span class="toggle-icon">▶</span>
+                </button>
+                <div class="rule-content" id="rule-<%= index %>">
+                    <ul>
+                        <% rule.details.forEach(detail => { %>
+                            <li><%= detail %></li>
+                        <% }) %>
+                    </ul>
+                </div>
+            </div>
+        <% }); %>
+    </div>
+</div>
+
+<script>
+function toggleRule(index) {
+    const content = document.getElementById(`rule-${index}`);
+    const toggleIcon = event.currentTarget.querySelector('.toggle-icon');
+    
+    if (content.classList.contains('active')) {
+        content.style.maxHeight = null;
+        content.classList.remove('active');
+        toggleIcon.textContent = '▶';
+    } else {
+        content.style.maxHeight = content.scrollHeight + "px";
+        content.classList.add('active');
+        toggleIcon.textContent = '▼';
+    }
+}
+</script>
 
 
 <%- include ('../partials/footer') %>

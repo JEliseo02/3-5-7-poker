@@ -19,6 +19,9 @@
     "express-session": "^1.18.1",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.7.1",
-    "socket.io": "^4.8.0"
+    "peerjs": "^1.5.4",
+    "simple-peer": "^9.11.1",
+    "socket.io": "^4.8.0",
+    "webrtc-adapter": "^9.0.1"
   }
 }

@@ -8,8 +8,10 @@ const path = require('path');
 const session = require('express-session');
 const flash = require('connect-flash');
 const bcrypt = require('bcrypt');
+const router = express.Router();
 const { isAuthenticated, isNotAuthenticated } = require (path.join(__dirname, 'src', 'middleware', 'auth'));
 const User = require('./src/models/user');
+const gameRouter = require('./src/routes/game');
 
 
 //Load environment variables, ensuring sensative data will be kept out of the url
@@ -71,8 +73,89 @@ app.get('/', (req,res) => {
 
 // - - - - - Rules Route - - - - - |
 app.get('/rules', (req,res) => {
-    res.render('pages/rules', {title: 'Rules'});
-})
+    const rules = [
+        {
+            title: "Round Structure",
+            details: [
+                "Players start with 3 cards (3s are wild)",
+                "Then get 2 more cards (5s are wild)",
+                "Finally get 2 more cards (7s are wild)"
+            ]
+        },
+        {
+            title: "Starting the Game",
+            details: [
+                "Each player puts in a pre-set ante before playing",
+                "Example: If ante is $0.25, everyone puts this in to start"
+            ]
+        },
+        {
+            title: "Playing Options",
+            details: [
+                "Play against another player: Player vs Player",
+                "Play against the dealer: Player vs Dealer",
+                "Choose not to play: When No Player Plays, Non-Playing Participants",
+                "Fold"
+            ]
+        },
+        {
+            title: "Player vs Player",
+            details: [
+                "If two players want to play with their current hand, they swap hands",
+                "Winner takes the pot",
+                "Loser must match the pot amount"
+            ]
+        },
+        {
+            title: "Player vs Dealer",
+            details: [
+                "If only one player wants to play they will go against the dealer",
+                "Player reveals their hand to the table",
+                "Dealer draws the same amount of cards",
+                "If player wins, they take the pot, game ends",
+                "If dealer wins, player must match the pot, deck is reshuffled and game continues"
+            ]
+        },
+        {
+            title: "When No Player Plays",
+            details: [
+                "All players must reveal their cards",
+                "Players with the best hand must match the pot",
+                "Deck is reshuffled for new round",
+                "Players don't need an additional ante for the next round"
+            ]
+        },
+        {
+            title: "Non-Playing Participants",
+            details: [
+                "Players who do not play in the round will put in another $.25 to reveal the next round",
+                "Exception: When no one plays all players reveal their hands"
+            ]
+        },
+        {
+            title: "Banker Option (Optional)",
+            details: [
+                "Host can select a banker",
+                "Banker will collect total of all chips",
+                "Tracks and distributes winnings/losses at the end",
+                "Example: 4 players with $20 each, banker holds $80"
+            ]
+        },
+        {
+            title: "Player limit",
+            details: [
+                "Standard game: Maximum 7 players with one deck",
+                "8+ players will require an additional deck"
+            ]
+        }
+    ];
+
+
+    res.render('pages/rules', {
+        title: 'Game Rules',
+        rules: rules
+    });
+});
 
 
 // | - - - - - Login Route - - - - - |
@@ -185,48 +268,16 @@ app.get('/logout', isAuthenticated, (req, res) => {
 });
 
 
+// Use game routes
+const gameRoutes = gameRouter(app);
+app.use('/game', gameRoutes.router);
 
 
-// | - - - - - Play Route - - - - - |
-
-app.get('/play', isAuthenticated, (req,res) => {
-    res.render('pages/game', {title: 'Play Game'});
-})
-
-
-// | - - - - - END OF PLAY - - - - - |
+// Set up Socket.IO
+gameRoutes.handleSocketConnection(io);
 
 
 
-// | - - - - - Join Route - - - - - | 
-
-app.get('/join', isAuthenticated, (req,res) => {
-    res.render('pages/join', {title: 'Join Game'});
-})
-
-
-
-
-
-
-
-//Socket.IO connection handling 
-io.on('connection', (socket) => {
-    console.log('New Client Connected!');
-
-    //Handles when a player joins
-    socket.on('PlayerJoin', (playerData) => {
-        //TODO: Implement Player Join Logic
-        console.log('Player Joined: ', playerData);
-        //Broadcast to other players or update game state
-    });
-
-    //Handles a disconnect
-    socket.on('disconnect', () => {
-        console.log('Client Disconnected');
-        //TODO: Handle player disconnect logic
-    });
-});
 
 
 // Error Handling Middelware
