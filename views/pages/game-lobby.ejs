@@ -1,18 +1,21 @@
 <%- include ('../partials/header', {title: 'Welcome to 3-5-7 Poker!'}) %>
 
 
+<body>
 <div class="game-lobby">
     <h1><%= lobby.name %></h1>
     <p>Lobby Code: <%= lobby.code %></p>
     <p>Share URL: /game/lobby/<%= lobby.urlId %></p>
+    <p>Connected Players: <span id="connection-count">0</span></p>
 
     <div class="player-list">
         <h2>Players</h2>
-        <ul>
+        <ul id="players-container">
             <% lobby.players.forEach(player => { %>
+                <% console.log('Rendering player:', player); %>
                 <li class="player <%= player.userId.equals(lobby.hostId) ? 'host' : '' %>">
                     <%= player.userId.equals(lobby.hostId) ? '👑' : '' %>
-                    <%= player.userId.username %>
+                    <%= player.userId ? player.userId.username : 'Unknown' %>
                 </li>
             <% }) %>
         </ul>
@@ -20,4 +23,62 @@
 </div>
 
 
+<script src="/socket.io/socket.io.js"></script>
+<script>
+
+    //Initialize socket connection
+    const socket = io();
+
+    //Get lobby Id from the url 
+    const lobbyId = '<%= lobby.urlId %>';
+
+    const currentUsername = '<%= session.username %>';
+    const currentUserId = '<%= session.userId%>';
+
+    //Join the lobby when the page loads
+    socket.emit('joinLobby', {
+        lobbyId: lobbyId,
+        username: currentUsername,
+        userId: currentUserId
+    });
+
+
+    //Handle player list updates
+    socket.on('updatePlayerList', (data) => {
+    console.log('Received player list update:', data);
+    const playerList = document.getElementById('players-container');
+    if (!data.players) {
+        console.error('No players data received');
+        return;
+    }
+    
+    playerList.innerHTML = data.players.map(player => {
+        console.log('Processing player:', player);
+        return `
+            <li class="player ${player.isHost ? 'host' : ''}">
+                ${player.isHost ? '👑 ' : ''}${player.username || 'Unknown'}
+            </li>
+        `;
+    }).join('');
+});
+
+    //Listen for connection updates
+    socket.on('connectionUpdate', (data) => {
+        console.log('Connection update recieved: ', data);
+        document.getElementById('connection-count').textContent = data.count
+    });
+
+    socket.on('connection-error', (error) => {
+        console.erorr('Connection error: ', error);
+    });
+
+    socket.on('connect', () => {
+        console.log('Connected to server successfully');
+    })
+</script>
+
+
+
+
+</body>
 <%- include ('../partials/footer') %>
