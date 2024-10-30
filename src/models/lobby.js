@@ -36,8 +36,13 @@ const lobbySchema = new Schema({
 
     status: {
         type: String,
-        enum: ['waiting', 'completed', 'in-progress'],
+        enum: ['waiting', 'completed', 'in-progress', 'abandoned'],
         default: 'waiting'
+    },
+
+    lastActivity: {
+        type: Date,
+        default: Date.now()
     },
 
 
@@ -145,6 +150,17 @@ lobbySchema.methods.isJoinable = function() {
         this.players.length < this.gameSettings.maxPlayers;
 };
 
+//Method to update activity
+lobbySchema.methods.updateActivity = async function() {
+    this.lastActivity = new Date();
+    
+    // Reset expiration if lobby is still active
+    if (this.status === 'waiting' || this.status === 'in-progress'){
+        this.expiresAt = new Date(Date.now() + 12 * 60 * 60 * 1000);
+    }
+    await this.save();
+};
+
 
 //Method to add a player to the lobby
 lobbySchema.methods.addPlayer = async function(userId) {
@@ -168,10 +184,32 @@ lobbySchema.pre('save', function(next) {
 });
 
 
-//Method to remove a player from the lobby
+//Enhanced removePlayer method with logging
 lobbySchema.methods.removePlayer = async function(userId) {
+    console.log('Removing player with userId:', userId);
+    console.log('Current players:', this.players);
+    
+    // Store original length to check if player was actually removed
+    const originalLength = this.players.length;
+    
     this.players = this.players.filter(player => !player.userId.equals(userId));
+    
+    console.log('Players after removal:', this.players);
+    
+    // Check if player was actually removed
+    if (originalLength === this.players.length) {
+        console.log('Player not found in lobby');
+        return false;
+    }
+
+    // If host is removed and there are other players, transfer host
+    if (this.hostId.equals(userId) && this.players.length > 0) {
+        this.hostId = this.players[0].userId;
+        console.log('Host transferred to:', this.hostId);
+    }
+
     await this.save();
+    return true;
 };
 
 
@@ -192,6 +230,22 @@ lobbySchema.methods.updateLobbyStatus = async function(newStatus) {
     }
     this.status = newStatus;
     await this.save();
+};
+
+
+//Method to check health
+lobbySchema.methods.checkHealth = function() {
+    const now = new Date();
+    const inactiveTime = now - this.lastActivity;
+    const timeUntilExpiry = this.expiresAt - now;
+
+    return {
+        isActive: this.status !== 'completed' && this.status !== 'in-progress',
+        inactiveMinutes: Math.floor(inactiveTime / (1000 * 60)),
+        expiryMinutes: Math.floor(timeUntilExpiry / (1000 * 60)),
+        shouldWarn: timeUntilExpiry < (60 * 60 * 1000),
+        shouldCleanup: now >= this.expiresAt
+    };
 };
 
 

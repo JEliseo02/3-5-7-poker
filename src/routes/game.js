@@ -8,15 +8,24 @@ const Lobby = require('../models/lobby')
 const handleSocketConnection = (io) => {
 
     const lobbyConnections = new Map(); // Using Map to store lobby connections data
+    const socketToUser = new Map();
 
     //Handle joining a lobby
     io.on('connection', (socket) => {
         console.log('New Client Connected! Socket ID: ', socket.id);
 
         socket.on('joinLobby', async (data) => {
+
             const {lobbyId, username, userId} = data;
             console.log(`Socket ${socket.id} joining lobby: ${lobbyId}`);
             console.log('Join lobby data: ', {lobbyId, username, userId});
+
+
+            //Store user info for disconnect handling
+            socketToUser.set(socket.id, {userId, username, lobbyId});
+            console.log('Stored socket mapping:', {socketId: socket.id, userId, username, lobbyId});
+
+
 
             //Emit the player list to all clients in the lobby
             try {
@@ -81,17 +90,59 @@ const handleSocketConnection = (io) => {
             }
         });
 
-        socket.on('disconnect', () => {
-            console.log('Client Disconnected, socketId: ', socket.id);
+        // Update the disconnect handler
+        socket.on('disconnect', async () => {
+            console.log('Client Disconnected, socketId:', socket.id);
+            
+            // Get the disconnecting user's info
+            const userInfo = socketToUser.get(socket.id);
+            
+            if (userInfo) {
+                const { userId, username, lobbyId } = userInfo;
+                console.log(`User ${username} disconnecting from lobby ${lobbyId}`);
+                
+                try {
+                    const lobby = await Lobby.findOne({urlId: lobbyId})
+                        .populate('players.userId')
+                        .populate('hostId');
+                        
+                    if (lobby) {
+                        // Remove the player
+                        await lobby.removePlayer(userId);
+                        
+                        // Get fresh lobby data
+                        const updatedLobby = await Lobby.findOne({urlId: lobbyId})
+                            .populate('players.userId')
+                            .populate('hostId');
+                            
+                        if (updatedLobby) {
+                            // Emit updated player list
+                            const playerData = updatedLobby.players.map(player => ({
+                                username: player.userId.username,
+                                isHost: player.userId.equals(updatedLobby.hostId)
+                            }));
+                            
+                            io.to(lobbyId).emit('updatePlayerList', {
+                                players: playerData
+                            });
+                        }
+                    }
 
-            lobbyConnections.forEach((connections, lobbyId) => {
-                if (connections.has(socket.id)) {
-                    connections.delete(socket.id);
-                    io.to(lobbyId).emit('connectionUpdate', {
-                        count: connections.size
-                    });
+                    // Update connection count
+                    if (lobbyConnections.has(lobbyId)) {
+                        const connections = lobbyConnections.get(lobbyId);
+                        connections.delete(socket.id);
+                        io.to(lobbyId).emit('connectionUpdate', {
+                            count: connections.size
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error handling disconnect:', error);
                 }
-            });
+            }
+
+            // Clean up socket tracking
+            socketToUser.delete(socket.id);
         });
     });
 };
