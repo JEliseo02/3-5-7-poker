@@ -1,4 +1,50 @@
 <%- include ('../partials/header', {title: 'Error Page'}) %>
 
+<div class="join-container">
+    <div class="join-methods">
+
+        <!-- Input Section -->
+        <div class="code join">
+            <h2>Join By Code</h2>
+            <form id="code-join-form">
+                <input 
+                    type="text"
+                    id="lobby-code"
+                    name="lobbyCode"
+                    maxlength="4"
+                    placeholder="Enter 4 Digit Code"
+                    pattern="\d{4}"
+                    required
+                    >
+                <button type="submit">Join Game</button>
+            </form>
+        </div>
+
+        <!-- Lobbies Section -->
+        <div class="available-lobbies">
+            <h2>Available Games</h2>
+            <div id="lobbies-list">
+                 <!-- Lobbies Will Dynamically be Displayed here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Socket.IO client library -->
+<script src="/socket.io/socket.io.js"></script>
+
+<!-- Lobby Management Code -->
+<script src="/js/join.js"></script>
+
+<script>
+    //Initialize the lobby manager when the page loads
+
+    const lobbyManager = new LobbyManager();
+
+</script>
+
+
+
+
 
 <%- include ('../partials/footer') %>

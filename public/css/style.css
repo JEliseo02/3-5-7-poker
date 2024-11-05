@@ -489,6 +489,40 @@ body{
     margin-right: 0.5rem;
 }
 
+/* - - - - - END OF GAME LOBBY - - - - - */
+
+
+
+/* - - - - - Start of Join Page Design - - - - - */
+.join-container{
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 2rem;
+}
+
+.join-methods{
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 2rem;
+}
+
+.code-join, .available-lobbies{
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.lobby-item{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    margin: 0.5rem 0;
+    background: #f8f9fa;
+    border-radius: 4px;
+}
+
 
 
 

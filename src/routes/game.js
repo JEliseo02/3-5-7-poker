@@ -94,8 +94,8 @@ const handleSocketConnection = (io) => {
         socket.on('disconnect', async () => {
             console.log('Client Disconnected, socketId:', socket.id);
             
-            // Get the disconnecting user's info
             const userInfo = socketToUser.get(socket.id);
+            console.log('Disconnecting user info:', userInfo);
             
             if (userInfo) {
                 const { userId, username, lobbyId } = userInfo;
@@ -105,45 +105,97 @@ const handleSocketConnection = (io) => {
                     const lobby = await Lobby.findOne({urlId: lobbyId})
                         .populate('players.userId')
                         .populate('hostId');
-                        
+        
                     if (lobby) {
-                        // Remove the player
+                        // Remove player
                         await lobby.removePlayer(userId);
                         
-                        // Get fresh lobby data
-                        const updatedLobby = await Lobby.findOne({urlId: lobbyId})
-                            .populate('players.userId')
-                            .populate('hostId');
-                            
-                        if (updatedLobby) {
-                            // Emit updated player list
-                            const playerData = updatedLobby.players.map(player => ({
-                                username: player.userId.username,
-                                isHost: player.userId.equals(updatedLobby.hostId)
-                            }));
-                            
-                            io.to(lobbyId).emit('updatePlayerList', {
-                                players: playerData
-                            });
+                        // Check if lobby should be abandoned
+                        const shouldDelete = await lobby.checkAndAbandonIfEmpty();
+                        
+                        if (!shouldDelete) {
+                            // Only update other clients if lobby still exists
+                            const updatedLobby = await Lobby.findOne({urlId: lobbyId})
+                                .populate('players.userId')
+                                .populate('hostId');
+        
+                            if (updatedLobby) {
+                                const playerData = updatedLobby.players.map(player => ({
+                                    username: player.userId.username,
+                                    isHost: player.userId.equals(updatedLobby.hostId)
+                                }));
+                                
+                                io.to(lobbyId).emit('updatePlayerList', {
+                                    players: playerData
+                                });
+                            }
                         }
-                    }
-
-                    // Update connection count
-                    if (lobbyConnections.has(lobbyId)) {
-                        const connections = lobbyConnections.get(lobbyId);
-                        connections.delete(socket.id);
-                        io.to(lobbyId).emit('connectionUpdate', {
-                            count: connections.size
-                        });
+        
+                        // Update connection count
+                        if (lobbyConnections.has(lobbyId)) {
+                            const connections = lobbyConnections.get(lobbyId);
+                            connections.delete(socket.id);
+                            io.to(lobbyId).emit('connectionUpdate', {
+                                count: connections.size
+                            });
+        
+                            // If no connections, clean up the tracking
+                            if (connections.size === 0) {
+                                lobbyConnections.delete(lobbyId);
+                            }
+                        }
                     }
                 } catch (error) {
                     console.error('Error handling disconnect:', error);
                 }
             }
-
-            // Clean up socket tracking
+        
             socketToUser.delete(socket.id);
         });
+
+        socket.on('requestAvailableLobbies', async () => {
+            console.log('Received request for available lobbies');
+            try {
+                const lobbies = await Lobby.getAvailableLobbies();
+                console.log('Found lobbies to send:', lobbies);
+                
+                // Map the lobbies to include only necessary data
+                const lobbyData = lobbies.map(lobby => ({
+                    name: lobby.name,
+                    code: lobby.code,
+                    urlId: lobby.urlId,
+                    players: lobby.players || [],
+                    hostId: lobby.hostId,
+                    hostName: lobby.hostId ? lobby.hostId.username : 'Unknown'
+                }));
+                
+                console.log('Sending lobby data:', lobbyData);
+                socket.emit('availableLobbies', lobbyData);
+            } catch (error) {
+                console.error('Error fetching lobbies:', error);
+                console.error(error.stack);  // Log full error stack
+            }
+        });
+        
+        socket.on('checkLobbyCode', async (code) => {
+            console.log('Checking lobby code:', code);
+            try {
+                const lobby = await Lobby.findByCode(code);
+                console.log('Found lobby for code:', code, lobby);
+                
+                if (lobby) {
+                    console.log('Valid code, emitting urlId:', lobby.urlId);
+                    socket.emit('validCode', { urlId: lobby.urlId });
+                } else {
+                    console.log('Invalid code, no lobby found');
+                    socket.emit('invalidCode');
+                }
+            } catch (error) {
+                console.error('Error checking lobby code:', error);
+                socket.emit('invalidCode');
+            }
+        });
+
     });
 };
 
@@ -178,10 +230,13 @@ router.post('/create-lobby', isAuthenticated, async (req,res) => {
             urlId,
             name: lobbyName,
             hostId: req.session.userId,
-            players: [{ userId: req.session.userId}] //Adding host as the first player
+            players: [{ userId: req.session.userId}], //Adding host as the first player
+            status: 'waiting',
+            expiresAt: new Date(Date.now() + 12 * 60 * 60 * 1000)
         });
 
         await lobby.save();
+        console.log('Created a lobby:', lobby);
 
         //redirect to actual lobby page
         res.redirect(`/game/lobby/${lobby.urlId}`);
@@ -190,6 +245,27 @@ router.post('/create-lobby', isAuthenticated, async (req,res) => {
         console.error('Lobby Creation Error', error);
         req.flash('error', 'Failed to create lobby');
         res.redirect('/game/lobby');
+    }
+});
+
+// Add this temporary route to test lobby queries
+router.get('/test-lobbies', async (req, res) => {
+    try {
+        // Get all lobbies without any filtering
+        const allLobbies = await Lobby.find({});
+        console.log('All lobbies:', allLobbies);
+
+        // Get available lobbies
+        const availableLobbies = await Lobby.getAvailableLobbies();
+        console.log('Available lobbies:', availableLobbies);
+
+        res.json({
+            allLobbies,
+            availableLobbies
+        });
+    } catch (error) {
+        console.error('Test route error:', error);
+        res.status(500).json({ error: error.message });
     }
 });
 
@@ -226,5 +302,23 @@ router.get('/lobby/:urlId', isAuthenticated, async (req, res) => {
 router.get('/join', isAuthenticated, (req, res) => {
     res.render('pages/join', { title: 'Join Game' });
 });
+
+router.post('/join', isAuthenticated, async (req, res) => {
+    try {
+        const {lobbyCode} = req.body;
+        const lobby = await Lobby.findByCode(lobbyCode);
+
+        if (!lobby) {
+            req.flash('error', 'Invalid Lobby Code');
+            return res.redirect('/game/join');
+        }
+
+        res.redirect(`/game/lobby/${lobby.urlId}`);
+    } catch (error) {
+        console.error('Error joining lobby', error);
+        req.flash('error', 'Failed to join lobby');
+        res.redirect('/game/join');
+    }
+})
 
 module.exports = { router, handleSocketConnection };
