@@ -196,6 +196,27 @@ const handleSocketConnection = (io) => {
             }
         });
 
+        socket.on('togglePrivate', async (data) => {
+            const {lobbyId, userId} = data;
+            try{
+                const lobby = await Lobby.findOne({urlId: lobbyId});
+                if (lobby && lobby.hostId.equals(userId)) { // Only host can toggle this optiob
+                    const newStatus = await lobby.togglePrivateStatus();
+
+                    // Broadcasting the new status to all players in the lobby
+                    io.to(lobbyId).emit('privacyStatusChanged', {
+                        isPrivate: newStatus
+                    })
+
+                    // Update available lobbies
+                    const availableLobbies = await Lobby.getAvailableLobbies();
+                    io.emit('availableLobbies', availableLobbies);
+                }
+            } catch (error) {
+                console.error('Error toggling private status!', error);
+            }
+        })
+
     });
 };
 
@@ -232,6 +253,7 @@ router.post('/create-lobby', isAuthenticated, async (req,res) => {
             hostId: req.session.userId,
             players: [{ userId: req.session.userId}], //Adding host as the first player
             status: 'waiting',
+            privateStatus: false,
             expiresAt: new Date(Date.now() + 12 * 60 * 60 * 1000)
         });
 

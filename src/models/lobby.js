@@ -378,6 +378,7 @@ lobbySchema.statics.findByCode = async function (code) {  // Add code parameter
     return lobby;
 };
 
+// Checks if a lobby is abandoned
 lobbySchema.methods.checkAndAbandonIfEmpty = async function () {
     //check if lobby is empty by player length
     if (this.players.length === 0 ) {
@@ -388,6 +389,13 @@ lobbySchema.methods.checkAndAbandonIfEmpty = async function () {
     }
     return false;
 };
+
+// Toggle the private status
+lobbySchema.methods.togglePrivateStatus = async function () {
+    this.privateStatus = !this.privateStatus;
+    await this.save();
+    return this.privateStatus;
+}
 
 
 

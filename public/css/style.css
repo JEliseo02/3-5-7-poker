@@ -358,7 +358,7 @@ body{
 /* - - - - - END OF RULE - - - - - */
 
 
-/* - - - - - Start of Lobby Design - - - - - */
+/* - - - - - Start of Create Lobby Design - - - - - */
 .lobby-container{
     max-width: 600px;
     margin: 2rem auto;
@@ -414,7 +414,7 @@ body{
     background-color: #2980b9;
 }
 
-/* - - - - - END OF LOBBY - - - - - /*
+/* - - - - - END OF CREATE LOBBY - - - - - /*
 
 
 /* - - - - - Start of Game Lobby Design - - - - - */
@@ -489,6 +489,45 @@ body{
     margin-right: 0.5rem;
 }
 
+
+.privacy-toggle {
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;  /* Make sure this is present */
+    transition: all 0.3s ease;
+    border: none;     /* Add this */
+    font-weight: bold;  /* Add this */
+    opacity: 1;       /* Add this */
+    pointer-events: auto;  /* Add this */
+}
+
+.privacy-toggle.public {
+    background-color: #4CAF50;
+    color: white;
+    opacity: 1;
+}
+
+.privacy-toggle.private {
+    background-color: #f44336;
+    color: white;
+    opacity: 1;
+}
+
+.privacy-toggle:hover {  /* Add this */
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+}
+
+.privacy-controls {
+    margin: 1rem 0;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    justify-content: center;
+    opacity: 1;
+    pointer-events: auto;
+}
+
 /* - - - - - END OF GAME LOBBY - - - - - */
 
 
@@ -521,7 +560,10 @@ body{
     margin: 0.5rem 0;
     background: #f8f9fa;
     border-radius: 4px;
+    position: relative;
 }
+
+
 
 
 

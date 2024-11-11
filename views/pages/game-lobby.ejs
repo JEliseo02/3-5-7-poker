@@ -4,10 +4,29 @@
 <body>
 <div class="game-lobby">
     <h1><%= lobby.name %></h1>
-    <p>Lobby Code: <%= lobby.code %></p>
-    <p>Share URL: /game/lobby/<%= lobby.urlId %></p>
-    <p>Connected Players: <span id="connection-count">0</span></p>
 
+    <div class="privacy-controls">
+        <% if (session.userId === lobby.hostId.toString()) { %>
+            <button 
+                id="togglePrivateBtn" 
+                class="privacy-toggle <%= lobby.privateStatus ? 'private' : 'public' %>"
+                type="button"  
+            >
+                <%= lobby.privateStatus ? 'Make Public' : 'Make Private' %>
+            </button>
+        <% } %>
+        <span id="privacyStatus" class="status-indicator">
+            <%= lobby.privateStatus ? 'Private Lobby' : 'Public Lobby' %>
+        </span>
+    </div>
+
+    <div class="lobby-info">
+        <p>Lobby Code: <%= lobby.code %></p>
+        <p>Share URL: /game/lobby/<%= lobby.urlId %></p>
+        <p>Connected Players: <span id="connection-count">0</span></p>
+    </div>
+
+ 
     <div class="player-list">
         <h2>Players</h2>
         <ul id="players-container">
@@ -25,60 +44,77 @@
 
 <script src="/socket.io/socket.io.js"></script>
 <script>
-
-    //Initialize socket connection
+    console.log('Script starting...');
+    // Initialize socket connection first
     const socket = io();
 
-    //Get lobby Id from the url 
+    // Get lobby Id and user info
     const lobbyId = '<%= lobby.urlId %>';
-
     const currentUsername = '<%= session.username %>';
     const currentUserId = '<%= session.userId%>';
 
-    //Join the lobby when the page loads
+    // Privacy toggle handling
+    
+    const togglePrivateBtn = document.getElementById('togglePrivateBtn');
+    
+    if (togglePrivateBtn) {
+        togglePrivateBtn.addEventListener('click', () => {
+            socket.emit('togglePrivate', {
+                lobbyId: lobbyId,
+                userId: currentUserId
+            });
+        });
+    }
+
+    // Join lobby when page loads
     socket.emit('joinLobby', {
         lobbyId: lobbyId,
         username: currentUsername,
         userId: currentUserId
     });
 
-
-    //Handle player list updates
+    // Socket event handlers
     socket.on('updatePlayerList', (data) => {
-    console.log('Received player list update:', data);
-    const playerList = document.getElementById('players-container');
-    if (!data.players) {
-        console.error('No players data received');
-        return;
-    }
-    
-    playerList.innerHTML = data.players.map(player => {
-        console.log('Processing player:', player);
-        return `
-            <li class="player ${player.isHost ? 'host' : ''}">
-                ${player.isHost ? '👑 ' : ''}${player.username || 'Unknown'}
-            </li>
-        `;
-    }).join('');
-});
+        console.log('Received player list update:', data);
+        const playerList = document.getElementById('players-container');
+        if (!data.players) {
+            console.error('No players data received');
+            return;
+        }
+        
+        playerList.innerHTML = data.players.map(player => {
+            console.log('Processing player:', player);
+            return `
+                <li class="player ${player.isHost ? 'host' : ''}">
+                    ${player.isHost ? '👑 ' : ''}${player.username || 'Unknown'}
+                </li>
+            `;
+        }).join('');
+    });
 
-    //Listen for connection updates
+    socket.on('privacyStatusChanged', (data) => {
+        if (togglePrivateBtn) {
+            togglePrivateBtn.textContent = data.isPrivate ? 'Make Public' : 'Make Private';
+            togglePrivateBtn.className = `privacy-toggle ${data.isPrivate ? 'private' : 'public'}`;
+        }
+        if (privacyStatus) {
+            privacyStatus.textContent = data.isPrivate ? 'Private Lobby' : 'Public Lobby';
+        }
+    });
+
     socket.on('connectionUpdate', (data) => {
-        console.log('Connection update recieved: ', data);
-        document.getElementById('connection-count').textContent = data.count
+        console.log('Connection update received: ', data);
+        document.getElementById('connection-count').textContent = data.count;
     });
 
     socket.on('connection-error', (error) => {
-        console.erorr('Connection error: ', error);
+        console.error('Connection error: ', error);
     });
 
     socket.on('connect', () => {
         console.log('Connected to server successfully');
-    })
+    });
 </script>
-
-
-
 
 </body>
 <%- include ('../partials/footer') %>
